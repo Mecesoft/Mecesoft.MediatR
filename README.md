@@ -6,9 +6,11 @@ Mecesoft.MediatR is a lightweight, dependency-injection-friendly mediator librar
 for .NET. It supports requests, notifications, dependency-injection scopes, and
 ordered pipeline behaviors without a dependency on the MediatR package.
 
-> **Development status:** Version 1.1.0 is under development and is not published.
-> The latest published NuGet version is **1.0.3**. The 1.0.3 package targets .NET 9;
-> the current 1.1.0 source targets .NET 8 and .NET 10.
+> **Current version:** 1.1.0
+>
+> Supports **.NET 8** and **.NET 10**.
+> Includes optimized request dispatch, improved pipeline execution,
+> and backward-compatible notification publishing.
 
 ## Project links
 
