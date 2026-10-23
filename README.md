@@ -1,10 +1,23 @@
 # Mecesoft.MediatR
 
-Mecesoft.MediatR is a lightweight mediator for .NET 8 and .NET 10. It supports
-requests, notifications, dependency-injection scopes, and ordered pipeline behaviors
-without a dependency on the MediatR package.
+[![NuGet version](https://img.shields.io/nuget/v/Mecesoft.MediatR.svg?logo=nuget)](https://www.nuget.org/packages/Mecesoft.MediatR)
+
+Mecesoft.MediatR is a lightweight, dependency-injection-friendly mediator library
+for .NET. It supports requests, notifications, dependency-injection scopes, and
+ordered pipeline behaviors without a dependency on the MediatR package.
+
+> **Development status:** Version 1.1.0 is under development and is not published.
+> The latest published NuGet version is **1.0.3**. The 1.0.3 package targets .NET 9;
+> the current 1.1.0 source targets .NET 8 and .NET 10.
+
+## Project links
+
+- [GitHub repository](https://github.com/Mecesoft/Mecesoft.MediatR)
+- [NuGet package](https://www.nuget.org/packages/Mecesoft.MediatR)
 
 ## Installation
+
+Install the latest published version from NuGet:
 
 ```bash
 dotnet add package Mecesoft.MediatR
@@ -12,7 +25,12 @@ dotnet add package Mecesoft.MediatR
 
 ## Registration
 
+Register handlers from one or more assemblies and, optionally, open pipeline
+behaviors:
+
 ```csharp
+using Mecesoft.MediatR;
+
 builder.Services.AddMediatR(options =>
 {
     options.AddRegisterAssemblies(typeof(Program).Assembly);
@@ -21,10 +39,12 @@ builder.Services.AddMediatR(options =>
 ```
 
 `ISender` and discovered handlers are registered as transient services. Resolve
-`ISender` from the request scope; this allows handlers to use scoped services such
-as `DbContext` safely.
+`ISender` from the request scope so handlers can safely consume scoped services
+such as `DbContext`.
 
 ## Requests
+
+Requests with a response implement `IRequest<TResponse>`:
 
 ```csharp
 public sealed record GetUser(Guid Id) : IRequest<User>;
@@ -32,52 +52,66 @@ public sealed record GetUser(Guid Id) : IRequest<User>;
 public sealed class GetUserHandler(IUserRepository repository)
     : IRequestHandler<GetUser, User>
 {
-    public Task<User> Handle(GetUser request, CancellationToken cancellationToken) =>
+    public Task<User> Handle(
+        GetUser request,
+        CancellationToken cancellationToken) =>
         repository.GetAsync(request.Id, cancellationToken);
 }
 
-var user = await sender.Send(new GetUser(id), cancellationToken);
+User user = await sender.Send(new GetUser(id), cancellationToken);
 ```
 
 Void requests implement `IRequest` and use `IRequestHandler<TRequest>`.
 Cancellation tokens are passed to handlers and pipeline behaviors unchanged.
 
-## Pipelines and notifications
+## Pipeline behaviors
 
-For response requests, a pipeline behavior declares both request and response:
+For response requests, a pipeline behavior declares both the request and response
+types:
 
 ```csharp
-public sealed class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+public sealed class LoggingBehavior<TRequest, TResponse>
+    : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
 {
     public async Task<TResponse> Handle(
         TRequest request,
         RequesteHandlerDelete<TResponse> next,
-        CancellationToken cancellationToken = default) =>
-        await next();
+        CancellationToken cancellationToken = default)
+    {
+        return await next();
+    }
 }
 ```
 
 Void requests use `IPipelineBehavior<TRequest>` and `RequesteHandlerDelete`.
-Pipeline behaviors run in registration order. Notifications run concurrently by
-default for compatibility with earlier releases. Applications whose notification
-handlers share scoped dependencies that are not concurrency-safe can opt into
-sequential execution:
+Pipeline behaviors execute in registration order and may short-circuit without
+constructing the request handler.
+
+## Notifications
+
+Notification handlers run concurrently by default for compatibility with published
+versions. Applications whose handlers share scoped dependencies that are not
+concurrency-safe can opt into sequential execution during registration:
 
 ```csharp
-options.PublishNotificationsConcurrently = false;
+builder.Services.AddMediatR(options =>
+{
+    options.AddRegisterAssemblies(typeof(Program).Assembly);
+    options.PublishNotificationsConcurrently = false;
+});
 ```
 
-Notification handler failures and request handler failures propagate to the caller
-without being wrapped in reflection exceptions.
+Notification and request handler failures propagate to the caller without being
+wrapped in reflection exceptions.
 
 ## Compatibility
 
 The existing `IRequest`, `IRequest<TResponse>`, `IRequestHandler`, `ISender`,
 `Sender`, `INotification`, `INotificationHandler`, `IPipelineBehavior`, and
 `AddMediatR` APIs remain available. The legacy `RequesteHandlerDelete` delegate
-names are also retained for source compatibility.
+names are retained for source compatibility.
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+Mecesoft.MediatR is available under the [MIT License](LICENSE).

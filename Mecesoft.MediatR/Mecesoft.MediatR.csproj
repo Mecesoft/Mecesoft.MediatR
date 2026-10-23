@@ -12,7 +12,9 @@
         <Copyright>Copyright © Mecesoft</Copyright>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageReadmeFile>README.md</PackageReadmeFile>
-        <RepositoryUrl>https://github.com/mehmet02/Mecesoft.MediatR</RepositoryUrl>
+        <RepositoryUrl>https://github.com/Mecesoft/Mecesoft.MediatR</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/Mecesoft/Mecesoft.MediatR</PackageProjectUrl>
+        <RepositoryType>git</RepositoryType>
         <PackageTags>mediator;mediatr;dependency-injection;pipeline</PackageTags>
         <Version>1.1.0</Version>
         <PackageIcon>Mecesoft_MediatR_Logo.png</PackageIcon>
