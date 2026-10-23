@@ -29,3 +29,8 @@ copilot.data.migration.*
 .env
 .env.*
 !.env.example
+
+# NuGet packages
+*.nupkg
+*.snupkg
+/artifacts/

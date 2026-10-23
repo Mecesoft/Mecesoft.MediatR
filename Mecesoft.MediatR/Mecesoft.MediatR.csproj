@@ -18,7 +18,13 @@
         <PackageTags>mediator;mediatr;dependency-injection;pipeline</PackageTags>
         <Version>1.1.0</Version>
         <PackageIcon>Mecesoft_MediatR_Logo.png</PackageIcon>
-        <PackageReleaseNotes>Multi-targeted .NET 8 and .NET 10 release.</PackageReleaseNotes>
+        <PackageReleaseNotes>
+            Added support for .NET 8 and .NET 10.
+            Optimized request dispatch performance and reduced allocations.
+            Improved pipeline execution with lazy handler resolution.
+            Preserved backward-compatible concurrent notification publishing.
+            Added regression tests and improved documentation.
+        </PackageReleaseNotes>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <NoWarn>$(NoWarn);1591</NoWarn>
         <LangVersion>default</LangVersion>
